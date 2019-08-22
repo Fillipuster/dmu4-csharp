@@ -10,7 +10,6 @@ namespace Lek02_StringsAndFiles
 
     class Person
     {
-        public delegate void DPrint();
         public static List<Person> ParseCSVFile(string filename)
         {
             List<Person> result = new List<Person>();

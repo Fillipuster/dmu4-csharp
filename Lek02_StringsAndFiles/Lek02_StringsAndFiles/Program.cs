@@ -46,27 +46,36 @@ namespace Lek02_StringsAndFiles
             double number = 9;
             Console.WriteLine(number.power(2));
             Console.WriteLine(number.sqrt());
+
+            Console.WriteLine($"Palindromity of 'test' : {"test".IsPalindrome()}");
+            Console.WriteLine($"Palindromity of 'regninger' : {"regninger".IsPalindrome()}");
         }
 
         static void Recursion()
         {
-            Console.WriteLine(RecursionTools.IsPalindrome("test"));
-            Console.WriteLine(RecursionTools.IsPalindrome("radar"));
-            Console.WriteLine(RecursionTools.IsPalindrome("raddar"));
-            Console.WriteLine(RecursionTools.IsPalindrome("regninger"));
+            Console.WriteLine("test :: " + RecursionTools.IsPalindrome("test"));
+            Console.WriteLine("radar :: " + RecursionTools.IsPalindrome("radar"));
+            Console.WriteLine("raddar :: " + RecursionTools.IsPalindrome("raddar"));
+            Console.WriteLine("regninger :: " + RecursionTools.IsPalindrome("regninger"));
 
-            Console.WriteLine(RecursionTools.Factorial(5));
-            Console.WriteLine(RecursionTools.Factorial(-12));
+            Console.WriteLine($"5! = {RecursionTools.Factorial(5)}");
         }
 
         static void Delegates()
         {
-            // Delegates opgaver here
+            SimplePerson person = new SimplePerson("Rowan", "Atkinson");
+            person.FormattedPrint(SimplePerson.FormatFirstName);
+            person.FormattedPrint(SimplePerson.FormatFormalName);
+            person.FormattedPrint(p => "Mr. " + p.LastName);
         }
 
         static void Main(string[] args)
         {
-            Recursion();
+            //Experimentation();
+            //PeopleList();
+            //Extensions();
+            //Recursion();
+            Delegates();
 
             Console.ReadLine();
         }

@@ -50,6 +50,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecursionTools.cs" />
+    <Compile Include="SimplePerson.cs" />
+    <Compile Include="StringExt.cs" />
     <Compile Include="WeightSorter.cs" />
   </ItemGroup>
   <ItemGroup>
