@@ -13,6 +13,14 @@ namespace Lek02_StringsAndFiles
             return (num <= 0) ? 1 : num * Factorial(--num);
         }
 
+        public static int Power(int num, int exponent)
+        {
+            if (exponent <= 0)
+                return 1;
+
+            return num * Power(num, --exponent);
+        }
+
         public static bool IsPalindrome(string str)
         {
             return IsPalindrome(str, 0);
@@ -21,14 +29,10 @@ namespace Lek02_StringsAndFiles
         private static bool IsPalindrome(string str, int step)
         {
             if (step >= str.Length / 2)
-            {
                 return true;
-            }
 
             if (str[step] != str[str.Length - step - 1])
-            {
                 return false;
-            }
 
             return IsPalindrome(str, ++step);
         }

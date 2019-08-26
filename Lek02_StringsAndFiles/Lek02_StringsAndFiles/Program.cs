@@ -49,6 +49,7 @@ namespace Lek02_StringsAndFiles
 
             Console.WriteLine($"Palindromity of 'test' : {"test".IsPalindrome()}");
             Console.WriteLine($"Palindromity of 'regninger' : {"regninger".IsPalindrome()}");
+            Console.WriteLine($"Palindromity of 'raddar' : {"raddar".IsPalindrome()}");
         }
 
         static void Recursion()
@@ -57,6 +58,8 @@ namespace Lek02_StringsAndFiles
             Console.WriteLine("radar :: " + RecursionTools.IsPalindrome("radar"));
             Console.WriteLine("raddar :: " + RecursionTools.IsPalindrome("raddar"));
             Console.WriteLine("regninger :: " + RecursionTools.IsPalindrome("regninger"));
+
+            Console.WriteLine("5^3 = " + RecursionTools.Power(5, 3));
 
             Console.WriteLine($"5! = {RecursionTools.Factorial(5)}");
         }
@@ -73,9 +76,9 @@ namespace Lek02_StringsAndFiles
         {
             //Experimentation();
             //PeopleList();
-            //Extensions();
+            Extensions();
             //Recursion();
-            Delegates();
+            //Delegates();
 
             Console.ReadLine();
         }
