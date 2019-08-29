@@ -68,5 +68,17 @@ namespace Lek03_DelegatesLINQ
         {
             return string.Format("{0,-15} : {1,10} years {2,10} kg {3,10} points {4,10} acceptance", Name, Age, Weight, Score, Accepted);
         }
+
+        // Doesn't do the trick when using Intersect (LINQ)
+        public override bool Equals(object obj)
+        {
+            if (obj is Person)
+            {
+                Person p = (Person)obj;
+                return string.Equals(p.Name, Name);
+            }
+
+            return false;
+        }
     }
 }

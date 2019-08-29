@@ -15,5 +15,10 @@ namespace Lek03_DelegatesLINQ
                 person.Accepted = check(person);
             }
         }
+
+        public static void Reset(this List<Person> people)
+        {
+            people.ForEach(p => p.Accepted = false);
+        }
     }
 }
