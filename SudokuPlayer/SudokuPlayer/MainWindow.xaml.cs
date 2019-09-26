@@ -23,12 +23,13 @@ namespace SudokuPlayer
         public MainWindow()
         {
             InitializeComponent();
+
             // DEV
             LoadSudoku(SudokuHelper.FromHumanString("1...48....5....9....6...3.....57.2..8.3.........9............4167..........2....."));
             // /DEV
         }
 
-        private void LoadSudoku(ISudoku sudokuToLoad)
+        private void LoadSudoku(ISudoku sudokuToLoad, string name = "a Sudoku.")
         {
             sudokuGrid.Children.RemoveRange(0, sudokuGrid.Children.Count);
 
@@ -66,6 +67,8 @@ namespace SudokuPlayer
 
             sudoku = sudokuToLoad;
             solution = sudokuToLoad.Clone().Solve();
+
+            statusLeft.Content = "Loaded " + name;
         }
 
         //
@@ -75,17 +78,9 @@ namespace SudokuPlayer
         private void SelectCell(Label cell, int i, int j)
         {
             if (selectedCell != null)
-            {
                 selectedCell.Background = Brushes.Transparent;
 
-                Border oldCellBorder = (Border)selectedCell.Parent;
-                oldCellBorder.BorderBrush = Brushes.Black;
-                oldCellBorder.BorderThickness = new Thickness(1);
-            }
-
-            Border cellBorder = (Border)cell.Parent;
-            cellBorder.BorderBrush = Brushes.Blue;
-            cellBorder.BorderThickness = new Thickness(2);
+            cell.Background = Brushes.LightBlue;
 
             selectedCell = cell;
             selectedRow = i;
@@ -99,6 +94,12 @@ namespace SudokuPlayer
             SelectCell(cell, coordinate.Item1, coordinate.Item2);
         }
 
+        // Arrow key selection.
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            // To be implemented (hopefully)
+        }
+
         //
         // Cell value submission
         //
@@ -107,18 +108,17 @@ namespace SudokuPlayer
         {
             selectedCell.Background = Brushes.Transparent;
 
-            if (solution[selectedRow, selectedColumn] != submission)
+            if (solution[selectedRow, selectedColumn] == submission)
             {
-                // Failed.
-                selectedCell.Background = Brushes.Pink;
-                statusLeft.Content = $"Nope! That {submission} doesn't go there. Try something else.";
-                return;
+                sudoku.SetNumberAt(selectedRow, selectedColumn, submission);
             }
+            else
+            {
+                selectedCell.Background = Brushes.Red;
+                selectedCell.Content = submission != 0 ? submission.ToString() : " ";
 
-            sudoku.SetNumberAt(selectedRow, selectedColumn, submission);
-
-
-            selectedCell.Content = submission != 0 ? submission.ToString() : " ";
+                statusLeft.Content = $"Nope! That {submission} doesn't go there. Try something else.";
+            }
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
@@ -139,15 +139,47 @@ namespace SudokuPlayer
         private void MenuOpenCollection_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "txt files (*.txt)|*.txt|All files(*.*)|*.*";
 
             if (openFileDialog.ShowDialog() == true)
             {
                 string[] sudokuStrings = File.ReadAllLines(openFileDialog.FileName);
                 ISudoku[] sudokus = SudokuHelper.FromHumanStringArray(sudokuStrings);
-                CollectionViewerWindow popup = new CollectionViewerWindow(sudokus);
+                CollectionViewerWindow popup = new CollectionViewerWindow(sudokus, openFileDialog.FileName);
                 popup.Title = openFileDialog.FileName;
                 popup.OnSudokuSelected += LoadSudoku;
                 popup.Show();
+            }
+        }
+
+        private void MenuOpenSingle_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "sudoku files (*.sud)|*.sud";
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string sudokuString = File.ReadAllText(openFileDialog.FileName);
+                LoadSudoku(SudokuHelper.FromHumanString(sudokuString), openFileDialog.FileName);
+            }
+        }
+
+        private void MenuSave_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "sudoku files (*.sud)|*.sud";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                using (var file = saveFileDialog.OpenFile())
+                {
+                    for (int i = 0; i < 8; i++)
+                    {
+                        for (int j = 0; j < 8; j++)
+                        {
+                            file.WriteByte(sudoku[i, j]);
+                        }
+                    }
+                }
             }
         }
     }

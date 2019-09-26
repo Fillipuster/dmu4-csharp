@@ -7,9 +7,14 @@
         mc:Ignorable="d"
         Title="Sudoku" Height="550" Width="800"
         KeyUp="Window_KeyUp"
+        KeyDown="Window_KeyDown"
         >
 
     <Grid x:Name="mainGrid">
+        <Grid.Background>
+            <ImageBrush ImageSource="C:\Git\dmu4-csharp\SudokuPlayer\numbers.jpg"/>
+        </Grid.Background>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
@@ -22,15 +27,17 @@
         <Menu Grid.Column="0" Grid.Row="0">
             <MenuItem x:Name="menuFile" Header="File">
                 <MenuItem x:Name="menuOpen" Header="Open">
-                    <MenuItem x:Name="menuOpenSingle" Header="Single"/>
+                    <MenuItem x:Name="menuOpenSingle" Header="Single" Click="MenuOpenSingle_Click"/>
                     <MenuItem x:Name="menuOpenCollection" Header="Collection" Click="MenuOpenCollection_Click"/>
                 </MenuItem>
-                <MenuItem x:Name="menuSave" Header="Save"/>
+                <MenuItem x:Name="menuSave" Header="Save" Click="MenuSave_Click"/>
                 <MenuItem x:Name="menuExit" Header="Exit"/>
             </MenuItem>
         </Menu>
 
-        <UniformGrid x:Name="sudokuGrid" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Rows="9" Columns="9"/>
+        <Viewbox Grid.Column="0" Grid.Row="1" Stretch="Uniform">
+            <UniformGrid x:Name="sudokuGrid"  HorizontalAlignment="Center" VerticalAlignment="Center" Rows="9" Columns="9" Background="White"/>
+        </Viewbox>
 
         <StatusBar Grid.Column="0" Grid.Row="2">
             <StatusBarItem x:Name="statusLeft">Welcome to Sudoku! To get started, open a Sudoku or Collection using File → Open</StatusBarItem>

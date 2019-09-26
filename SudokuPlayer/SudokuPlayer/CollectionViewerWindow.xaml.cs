@@ -8,15 +8,18 @@ namespace SudokuPlayer
     /// </summary>
     public partial class CollectionViewerWindow : Window
     {
-        public delegate void SudokuSelected(ISudoku sudoku);
+        public delegate void SudokuSelected(ISudoku sudoku, string name);
         public event SudokuSelected OnSudokuSelected;
 
+        private string fileName;
         private ISudoku[] sudokus;
         private int selected;
 
-        public CollectionViewerWindow(ISudoku[] sudokus)
+        public CollectionViewerWindow(ISudoku[] sudokus, string fileName)
         {
             InitializeComponent();
+
+            this.fileName = fileName;
 
             this.sudokus = sudokus;
             SelectSudoku(0);
@@ -59,7 +62,7 @@ namespace SudokuPlayer
 
         private void GoButton_Click(object sender, RoutedEventArgs e)
         {
-            OnSudokuSelected?.Invoke(sudokus[selected]);
+            OnSudokuSelected?.Invoke(sudokus[selected], fileName);
             Close();
         }
     }

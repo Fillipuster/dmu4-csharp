@@ -6,6 +6,7 @@ namespace SudokuPlayer
     {
         public static ISudoku FromHumanString(string str)
         {
+            System.Console.WriteLine("Trying to create from string:\n" + str);
             return SudokuFactory.CreateSudoku(str.Replace('.', '0'));
         }
 
