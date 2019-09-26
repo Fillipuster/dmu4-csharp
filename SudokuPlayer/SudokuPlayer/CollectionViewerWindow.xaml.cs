@@ -8,6 +8,9 @@ namespace SudokuPlayer
     /// </summary>
     public partial class CollectionViewerWindow : Window
     {
+        public delegate void SudokuSelected(ISudoku sudoku);
+        public event SudokuSelected OnSudokuSelected;
+
         private ISudoku[] sudokus;
         private int selected;
 
@@ -47,6 +50,17 @@ namespace SudokuPlayer
         private void NextButton_Click(object sender, RoutedEventArgs e)
         {
             SelectSudoku(selected + 1);
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void GoButton_Click(object sender, RoutedEventArgs e)
+        {
+            OnSudokuSelected?.Invoke(sudokus[selected]);
+            Close();
         }
     }
 }

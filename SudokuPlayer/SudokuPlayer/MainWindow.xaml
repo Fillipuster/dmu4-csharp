@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SudokuPlayer"
         mc:Ignorable="d"
-        Title="Sudoku" Height="450" Width="800">
+        Title="Sudoku" Height="550" Width="800"
+        KeyUp="Window_KeyUp"
+        >
 
     <Grid x:Name="mainGrid">
         <Grid.ColumnDefinitions>
@@ -28,10 +30,11 @@
             </MenuItem>
         </Menu>
 
-        <UniformGrid x:Name="sudokuGrid" Grid.Column="0" Grid.Row="1" Rows="9" Columns="9"></UniformGrid>
+        <UniformGrid x:Name="sudokuGrid" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Rows="9" Columns="9"/>
 
         <StatusBar Grid.Column="0" Grid.Row="2">
-            <StatusBarItem>Status = OK</StatusBarItem>
+            <StatusBarItem x:Name="statusLeft">Welcome to Sudoku! To get started, open a Sudoku or Collection using File → Open</StatusBarItem>
+            <StatusBarItem x:Name="statusRight" HorizontalAlignment="Right">Ready.</StatusBarItem>
         </StatusBar>
 
     </Grid>
