@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Lek03_DelegatesLINQ
 {
@@ -89,7 +87,7 @@ namespace Lek03_DelegatesLINQ
             List<Person> people = Person.ParseCSVFile(@"C:\git\dmu4-csharp\Lek03_DelegatesLINQ\data1.csv");
 
             var sorted = from p in people orderby p.Age descending select p; // Sleek way
-            sorted = people.OrderBy(p => p.Age); // Method / old way
+            sorted = people.OrderBy(p => p.Age); // Method/old way
 
             sorted.ToList().ForEach(Console.WriteLine);
         }
@@ -100,16 +98,19 @@ namespace Lek03_DelegatesLINQ
 
             // a
             Console.WriteLine("Sorted by deviance from average age:");
-            var avgAge = (int)people.Select(p => p.Age).Average();
-            var diff = from p in people orderby Math.Abs((p.Age > avgAge ? p.Age - avgAge : p.Age + avgAge) - avgAge) select p;
-            //Console.WriteLine("Average = " + avgAge);
+
+            var avgAge = people.Select(p => p.Age).Average();
+            var diff = from p in people orderby Math.Abs(p.Age - avgAge) select p; // Tak Tom!
+
             diff.ToList().ForEach(Console.WriteLine);
             Console.WriteLine();
 
             // b
-            Console.WriteLine("Alternate method:");
-            var b = from p in people orderby Math.Sqrt(p.Weight * p.Weight + p.Age * p.Age) select p;
-            b.ToList().ForEach(Console.WriteLine);
+            Console.WriteLine("Distance:");
+
+            var dwa = from p in people orderby Math.Sqrt(p.Weight * p.Weight + p.Age * p.Age) select p;
+
+            dwa.ToList().ForEach(Console.WriteLine);
         }
 
         public static void Exercise10()
@@ -206,7 +207,7 @@ namespace Lek03_DelegatesLINQ
             List<Person> data2 = Person.ParseCSVFile(@"C:\git\dmu4-csharp\Lek03_DelegatesLINQ\data2.csv");
 
             Console.WriteLine("The people from data1 whose names also occur in data2:");
-            var diff = (from p in data1 select p).Intersect(from p in data2 select p, new PersonNameEquality());
+            var diff = data1.Intersect(data2, new PersonNameEquality());
             diff.ToList().ForEach(Console.WriteLine);
         }
 
