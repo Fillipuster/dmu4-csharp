@@ -11,7 +11,7 @@
 
     <Grid x:Name="mainGrid">
         <Grid.Background>
-            <ImageBrush ImageSource="C:\Git\dmu4-csharp\SudokuPlayer\numbers.jpg"/>
+            <ImageBrush Stretch="UniformToFill" ImageSource="https://i.imgur.com/84giSnZ.png"/>
         </Grid.Background>
 
         <Grid.ColumnDefinitions>

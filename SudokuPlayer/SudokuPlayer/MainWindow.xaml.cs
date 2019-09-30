@@ -23,11 +23,16 @@ namespace SudokuPlayer
 
         public MainWindow()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.StackTrace, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
 
-            // DEV
             //LoadSudoku(HumanSudokuFactory.FromString("1...48....5....9....6...3.....57.2..8.3.........9............4167..........2....."));
-            // /DEV
         }
 
         private bool ShouldColorCellAt(int i, int j)
@@ -65,8 +70,6 @@ namespace SudokuPlayer
                         Tag = Tuple.Create(i, j)
                     };
 
-                    //int ij = ((Tuple < int, int)cellLabel.Tag).Item1;
-
                     // Alternate 3-cell group coloring.
                     Console.WriteLine(cell);
                     if (ShouldColorCellAt(i, j))
@@ -102,7 +105,12 @@ namespace SudokuPlayer
         private void SelectCell(Label cell, int i, int j)
         {
             if (selectedCell != null)
+            {
+                if (selectedCell.Background == Brushes.Pink)
+                    selectedCell.Content = " ";
+
                 selectedCell.Background = ShouldColorCellAt(selectedRow, selectedColumn) ? Brushes.LightGray : Brushes.Transparent;
+            }
 
             cell.Background = Brushes.LightBlue;
 
@@ -159,7 +167,7 @@ namespace SudokuPlayer
             else
             {
                 // Submission failed.
-                selectedCell.Background = Brushes.Red;
+                selectedCell.Background = Brushes.Pink;
                 selectedCell.Content = submission == 0 ? " " : submission.ToString();
 
                 statusLeft.Content = $"Nope! That {submission} doesn't go there. Try something else.";
@@ -234,9 +242,9 @@ namespace SudokuPlayer
             if (saveFileDialog.ShowDialog() == true)
             {
                 string sudokuString = string.Empty;
-                for (int i = 0; i <= 8; i++)
+                for (int i = 0; i < 9; i++)
                 {
-                    for (int j = 0; j <= 8; j++)
+                    for (int j = 0; j < 9; j++)
                     {
                         sudokuString += sudoku[i, j];
                     }
