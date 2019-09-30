@@ -58,7 +58,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="SudokuHelper.cs" />
+    <Compile Include="HumanSudokuFactory.cs" />
     <Page Include="CollectionViewerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -74,7 +74,7 @@
     <Compile Include="CollectionViewerWindow.xaml.cs">
       <DependentUpon>CollectionViewerWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ISudokuExt.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

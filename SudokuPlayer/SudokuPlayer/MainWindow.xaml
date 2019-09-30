@@ -31,7 +31,12 @@
                     <MenuItem x:Name="menuOpenCollection" Header="Collection" Click="MenuOpenCollection_Click"/>
                 </MenuItem>
                 <MenuItem x:Name="menuSave" Header="Save" Click="MenuSave_Click"/>
-                <MenuItem x:Name="menuExit" Header="Exit"/>
+                <MenuItem x:Name="menuExit" Header="Exit" Click="MenuExit_Click"/>
+            </MenuItem>
+
+            <MenuItem x:Name="menuGame" Header="Game">
+                <MenuItem x:Name="menuHint" Header="Hint" Click="MenuHint_Click"/>
+                <MenuItem x:Name="menuSolveSudoku" Header="Solve Sudoku" Click="MenuSolveSudoku_Click"/>
             </MenuItem>
         </Menu>
 

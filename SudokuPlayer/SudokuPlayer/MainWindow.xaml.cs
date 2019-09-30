@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using SudokuLib;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,8 +26,22 @@ namespace SudokuPlayer
             InitializeComponent();
 
             // DEV
-            LoadSudoku(SudokuHelper.FromHumanString("1...48....5....9....6...3.....57.2..8.3.........9............4167..........2....."));
+            //LoadSudoku(HumanSudokuFactory.FromString("1...48....5....9....6...3.....57.2..8.3.........9............4167..........2....."));
             // /DEV
+        }
+
+        private bool ShouldColorCellAt(int i, int j)
+        {
+            if (i / 3 % 3 == 1)
+            {
+                // Middle row.
+                return j / 3 % 3 != 1;
+            }
+            else
+            {
+                // Top and bottom row.
+                return j / 3 % 3 == 1;
+            }
         }
 
         private void LoadSudoku(ISudoku sudokuToLoad, string name = "a Sudoku.")
@@ -50,6 +65,11 @@ namespace SudokuPlayer
                         Tag = Tuple.Create(i, j)
                     };
 
+                    // Alternate 3-cell group coloring.
+                    Console.WriteLine(cell);
+                    if (ShouldColorCellAt(i, j))
+                        cellLabel.Background = Brushes.LightGray;
+
                     // "Click" handler.
                     cellLabel.MouseLeftButtonUp += OnCellLeftClick;
 
@@ -69,6 +89,8 @@ namespace SudokuPlayer
             solution = sudokuToLoad.Clone().Solve();
 
             statusLeft.Content = "Loaded " + name;
+
+            UpdateStatistics();
         }
 
         //
@@ -78,7 +100,7 @@ namespace SudokuPlayer
         private void SelectCell(Label cell, int i, int j)
         {
             if (selectedCell != null)
-                selectedCell.Background = Brushes.Transparent;
+                selectedCell.Background = ShouldColorCellAt(selectedRow, selectedColumn) ? Brushes.LightGray : Brushes.Transparent;
 
             cell.Background = Brushes.LightBlue;
 
@@ -90,34 +112,70 @@ namespace SudokuPlayer
         private void OnCellLeftClick(object sender, MouseButtonEventArgs e)
         {
             Label cell = (Label)sender;
-            Tuple<int, int> coordinate = (Tuple<int, int>)cell.Tag;
-            SelectCell(cell, coordinate.Item1, coordinate.Item2);
+            SelectCell(cell, cell.GetRow(), cell.GetColumn());
         }
 
         // Arrow key selection.
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            // To be implemented (hopefully)
+            // TODO Implement (hopefully, probably not)
         }
 
         //
         // Cell value submission
         //
 
+        private void SetCell(Label cell, byte value)
+        {
+            cell.Content = value == 0 ? " " : value.ToString();
+            sudoku[cell.GetRow(), cell.GetColumn()] = value;
+
+            UpdateStatistics();
+        }
+
+        private void UpdateStatistics()
+        {
+            statusRight.Content = $"Cells {sudoku.NumberOfOpenCells()}/{sudoku.NumberOfFilledCells()} (empty/filled)";
+        }
+
         private void AttemptToSubmit(byte submission)
         {
-            selectedCell.Background = Brushes.Transparent;
+            if (selectedCell == null)
+                return;
+
+            selectedCell.Background = ShouldColorCellAt(selectedRow, selectedColumn) ? Brushes.LightGray : Brushes.Transparent;
 
             if (solution[selectedRow, selectedColumn] == submission)
             {
-                sudoku.SetNumberAt(selectedRow, selectedColumn, submission);
+                // Submission success.
+                SetCell(selectedCell, submission);
+
+                statusLeft.Content = $"Successfully placed a {submission}.";
+
+                selectedCell = null;
+
+                if (sudoku.IsSolved())
+                {
+                    MessageBox.Show("🎉 Congratulations 🎉\nYou've solved the Sudoku!", "Sudoku solved!", MessageBoxButton.OK, MessageBoxImage.Information);
+                    statusLeft.Content = $"Congratulations! You've solved the Sudoku 🎉";
+                }
             }
             else
             {
+                // Submission failed.
                 selectedCell.Background = Brushes.Red;
-                selectedCell.Content = submission != 0 ? submission.ToString() : " ";
+                selectedCell.Content = submission == 0 ? " " : submission.ToString();
 
                 statusLeft.Content = $"Nope! That {submission} doesn't go there. Try something else.";
+            }
+        }
+
+        private void ClearSelectedCell()
+        {
+            if (selectedCell != null)
+            {
+                SetCell(selectedCell, 0);
+                statusLeft.Content = "Cleared cell.";
             }
         }
 
@@ -126,9 +184,9 @@ namespace SudokuPlayer
             //System.Windows.Input.Key.D1 = 35
             //System.Windows.Input.Key.D9 = 43
             if (e.Key == Key.Delete || e.Key == Key.Back)
-                AttemptToSubmit(0);
+                ClearSelectedCell();
 
-            if (e.Key.CompareTo(Key.D1) >= 0 && e.Key.CompareTo(Key.D9) <= 0)
+            if (e.Key >= Key.D1 && e.Key <= Key.D9)
                 AttemptToSubmit((byte)(e.Key.GetHashCode() - 34));
         }
 
@@ -144,7 +202,7 @@ namespace SudokuPlayer
             if (openFileDialog.ShowDialog() == true)
             {
                 string[] sudokuStrings = File.ReadAllLines(openFileDialog.FileName);
-                ISudoku[] sudokus = SudokuHelper.FromHumanStringArray(sudokuStrings);
+                ISudoku[] sudokus = HumanSudokuFactory.FromArray(sudokuStrings);
                 CollectionViewerWindow popup = new CollectionViewerWindow(sudokus, openFileDialog.FileName);
                 popup.Title = openFileDialog.FileName;
                 popup.OnSudokuSelected += LoadSudoku;
@@ -160,7 +218,16 @@ namespace SudokuPlayer
             if (openFileDialog.ShowDialog() == true)
             {
                 string sudokuString = File.ReadAllText(openFileDialog.FileName);
-                LoadSudoku(SudokuHelper.FromHumanString(sudokuString), openFileDialog.FileName);
+                Console.WriteLine(sudokuString);
+                try
+                {
+                    LoadSudoku(SudokuFactory.CreateSudoku(sudokuString.Trim()), openFileDialog.FileName);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("There was a problem opening the Sudoku.\nPlease ensure the Sudoku is solveable, and that the file is properly formatted.", "Failed opening Sudoku", MessageBoxButton.OK, MessageBoxImage.Error);
+                    statusLeft.Content = "Failed to open Sudoku. Please ensure the Sudoku is solveable, and the file is properly formatted.";
+                }
             }
         }
 
@@ -170,17 +237,65 @@ namespace SudokuPlayer
             saveFileDialog.Filter = "sudoku files (*.sud)|*.sud";
             if (saveFileDialog.ShowDialog() == true)
             {
-                using (var file = saveFileDialog.OpenFile())
+                string sudokuString = string.Empty;
+                for (int i = 0; i <= 8; i++)
                 {
-                    for (int i = 0; i < 8; i++)
+                    for (int j = 0; j <= 8; j++)
                     {
-                        for (int j = 0; j < 8; j++)
-                        {
-                            file.WriteByte(sudoku[i, j]);
-                        }
+                        sudokuString += sudoku[i, j];
                     }
                 }
+
+                File.WriteAllText(saveFileDialog.FileName, sudokuString);
             }
+        }
+
+        private void MenuSolveSudoku_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (Border container in sudokuGrid.Children)
+            {
+                Label cell = (Label)container.Child;
+                SetCell(cell, solution[cell.GetRow(), cell.GetColumn()]);
+            }
+
+            statusLeft.Content = "Computationally solved active Sudoku.";
+        }
+
+        private void MenuHint_Click(object sender, RoutedEventArgs e)
+        {
+            if (selectedCell != null)
+            {
+                List<byte> possibleNums = sudoku.PossibleNumbers(selectedCell.GetRow(), selectedCell.GetColumn());
+                string possibleNumsStr = string.Empty;
+
+                if (possibleNums != null)
+                {
+                    for (int i = 0; i < possibleNums.Count; i++)
+                    {
+                        possibleNumsStr += possibleNums[i];
+                        if (i < possibleNums.Count - 1)
+                            possibleNumsStr += ", ";
+                    }
+
+                    statusLeft.Content = $"Possible numbers for selected cell are: {possibleNumsStr}.";
+                }
+                else
+                {
+                    statusLeft.Content = $"A number is already placed in the selected cell.";
+                }
+
+            }
+            else
+            {
+                statusLeft.Content = "You have to select a cell to get a hint.";
+            }
+        }
+
+        private void MenuExit_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to exit?\nAny unsaved progress will be lost.", "Are you sure?", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                Application.Current.Shutdown();
+
         }
     }
 }
