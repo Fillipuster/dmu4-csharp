@@ -65,6 +65,8 @@ namespace SudokuPlayer
                         Tag = Tuple.Create(i, j)
                     };
 
+                    //int ij = ((Tuple < int, int)cellLabel.Tag).Item1;
+
                     // Alternate 3-cell group coloring.
                     Console.WriteLine(cell);
                     if (ShouldColorCellAt(i, j))
@@ -113,12 +115,6 @@ namespace SudokuPlayer
         {
             Label cell = (Label)sender;
             SelectCell(cell, cell.GetRow(), cell.GetColumn());
-        }
-
-        // Arrow key selection.
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            // TODO Implement (hopefully, probably not)
         }
 
         //

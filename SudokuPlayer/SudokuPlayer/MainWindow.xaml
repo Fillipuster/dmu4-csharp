@@ -7,8 +7,7 @@
         mc:Ignorable="d"
         Title="Sudoku" Height="550" Width="800"
         KeyUp="Window_KeyUp"
-        KeyDown="Window_KeyDown"
-        >
+    >
 
     <Grid x:Name="mainGrid">
         <Grid.Background>
